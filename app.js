@@ -1,32 +1,39 @@
-const express = require('express');
-const passport = require('passport');
-const auth = require('./routes/auth');
-const session = require('express-session');
-const config = require('config');
+import express from 'express';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import path from 'path';
+import passport from 'passport';
+import config from 'config';
+import { default as auth, isAuthenticated} from './routes/auth';
+import api from './routes/api';
 
 const app = express();
+const port = process.env.PORT || 8080;
+
+/* [START passport setting] */
+app.use(session({secret: config.SESSION_SECRET}))
 app.use(passport.initialize());
-app.use(session({secret: config.SESSION_SECRET}));
 app.use(passport.session());
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});
+/* [END passport setting] */
 
-function isAuthenticated(req, res, next){
-    if (req.isAuthenticated()) {
-        return next();
-    } else {
-        res.redirect('/auth/login');
-    }
-}
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
+// Routing
 app.use('/auth', auth);
-app.get('/', (req, res) => {
-    res.status(200).send('Hello, world!').end();
+app.use('/api', api);
+
+// Application Root
+app.get('/',
+  isAuthenticated,
+  (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT);
+app.listen(port, (err) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.info(`==> Listening on port ${port}. Open up http://localhost:${port}/ in your browser.`);
+  }
+});
