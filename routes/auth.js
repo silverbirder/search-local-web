@@ -4,7 +4,7 @@ import express from 'express';
 import passport from 'passport';
 import passportGoogleOauth2 from 'passport-google-oauth20';
 import refresh from 'passport-oauth2-refresh';
-import path from 'path';
+import path, { resolve } from 'path';
 import config from 'config';
 import {saveUser, findUser} from './db';
 
@@ -57,6 +57,17 @@ export function isAuthenticated(req, res, next){
     res.redirect(config.CLIENT_CALLBACK_BASE_URL + '/' + nowFileName + '/login');
   }
 }
+
+export function refreshToken(user) {
+  return new Promise((resolve, reject) => {
+    refresh.requestNewAccessToken('google', user.accessToken, (err, accessToken) => {
+      user.accessToken = accessToken;
+      saveUser(user).then(() => {
+        resolve(user);
+      })
+    });
+  });
+};
 
 passport.use(strategy);
 refresh.use(strategy);

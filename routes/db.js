@@ -7,7 +7,7 @@ const datastore = new Datastore({
 });
 const kind = 'User';
 
-export function saveUser(user) {
+export async function saveUser(user) {
   const name = user.id;
   const userKey = datastore.key([kind, name]);
   return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ export function saveUser(user) {
   })
 }
 
-export function findUser(id) {
+export async function findUser(id) {
   const query = datastore.createQuery(kind).filter('id', id).limit(1);
   return new Promise((resolve, reject) => {
     datastore.runQuery(query).then(results => {

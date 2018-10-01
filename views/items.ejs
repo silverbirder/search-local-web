@@ -1,0 +1,16 @@
+<% for (var i in items ) { %>
+<div class="row">
+  <div class="col s12">
+      <div class="card horizontal">
+          <div class="card-stacked">
+              <div class="card-content">
+              <p><%= items[i].title %></p>
+              </div>
+              <div class="card-action">
+              <a href="<%= items[i].link %>" target="_blank">link</a>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<% } %>

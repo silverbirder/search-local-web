@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>search-local-web</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="row">
+          <form name="search">
+            <div class="input-field col s6 offset-s2">
+              <input id="search" type="text" class="validate">
+              <label for="search">search words</label>
+            </div>
+            <div class="input-field col s4">
+              <button type="submit" id="searchWeb" class="btn waves-effect waves-light" name="action"><i class="material-icons">search</i></button>
+            </div>
+          </form>
+        </div>
+        <div class="items"></div>
+        <div class="fixed-action-btn" style="bottom: 50px; right: 19px;">
+          <button class="btn add-btn btn-floating btn-large waves-effect waves-light modal-trigger right" data-target="modal1"><i class="material-icons">add</i></button>
+        </div>
+        <div id="modal1" class="modal bottom-sheet">
+          <i class="modal-close material-icons right">close</i>
+          <div class="row">
+            <form name="save">
+              <div class="input-field col s6 offset-s2">
+                <input id="url" type="text" class="validate">
+                <label for="url">save url</label>
+              </div>
+              <div class="input-field col s4">
+                <button type="submit" id="saveWeb" class="btn waves-effect waves-light" name="action"><i class="material-icons">save</i></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, {});
+      });
+      $(function(){
+        $('[name="search"]').on('submit', function(){
+          $('.items').empty();
+          $.ajax({
+            url:'./api/v1/getData',
+            type: 'POST',
+            data: {
+              'word': $('#search').val()
+            }
+          }).done(function(html){
+            $('.items').append(html);
+          });
+          return false;
+        });
+        $('[name="save"]').on('submit', function(){
+          $.ajax({
+            url:'./api/v1/saveData',
+            type: 'POST',
+            data: {
+              'url': $('#url').val()
+            }
+          }).done(function(html){
+            $('#url').val('');
+            alert('saved!');
+          });
+          return false;
+        });
+      });
+    </script>
+  </body>
+</html>

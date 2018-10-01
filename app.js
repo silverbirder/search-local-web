@@ -1,9 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import path from 'path';
 import passport from 'passport';
 import config from 'config';
+import favicon from 'serve-favicon';
+import path from 'path';
 import { default as auth, isAuthenticated} from './routes/auth';
 import api from './routes/api';
 
@@ -18,6 +19,8 @@ app.use(passport.session());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 
 // Routing
 app.use('/auth', auth);
@@ -27,7 +30,7 @@ app.use('/api', api);
 app.get('/',
   isAuthenticated,
   (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.render("./index.ejs")
 });
 
 app.listen(port, (err) => {
